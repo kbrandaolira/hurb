@@ -3,12 +3,16 @@
   "host": "localhost",
   "port": 3306,
   "username": "root",
-  "password": "password",
+  "password": "mint240191",
   "database": "hurb",
-  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "entities": [
+    "dist/**/*.entity{.ts,.js}"
+  ],
   "synchronize": false,
-  "migrations": ["src/migration/*.ts"],
+  "migrations": [
+    "migration/*.ts"
+  ],
   "cli": {
-    "migrationsDir": "src/migration"
+    "migrationsDir": "migration"
   }
 }

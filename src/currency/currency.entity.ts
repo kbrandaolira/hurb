@@ -8,7 +8,7 @@ import {
 @Entity()
 export class Currency {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({
     type: 'varchar',
@@ -23,7 +23,7 @@ export class Currency {
     nullable: false,
     unique: true,
   })
-  codex: string;
+  code: string;
 
   @CreateDateColumn({
     type: 'timestamp',

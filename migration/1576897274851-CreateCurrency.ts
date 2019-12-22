@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+/*import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateCurrency1576897274851 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
@@ -10,6 +10,8 @@ export class CreateCurrency1576897274851 implements MigrationInterface {
             name: 'id',
             type: 'int',
             isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment'
           },
           {
             name: 'name',
@@ -37,4 +39,4 @@ export class CreateCurrency1576897274851 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.dropTable('currency');
   }
-}
+}*/
