@@ -4,9 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CurrencyDto } from './dto/currency.dto';
 import { Validator } from 'class-validator';
+import { ExchangeAPI } from 'src/exchange/exchange.api';
+import { ExchangeDto } from 'src/exchange/dto/exchange.dto';
 
 @Injectable()
 export class CurrencyService {
+
+  private readonly exchangeApi: ExchangeAPI = new ExchangeAPI();
+
   constructor(
     @InjectRepository(Currency)
     private readonly currencyRepository: Repository<Currency>,
@@ -43,7 +48,10 @@ export class CurrencyService {
       throw new BadRequestException('name already exists')
     }
 
-    //Se código existe na API
+    if (!await this.exchangeApi.isValidCode(dto.code) && dto.code !== this.exchangeApi.getBaseCurrency()) {
+      throw new BadRequestException('invalid code')
+    }
+
     return await this.currencyRepository.save(dto);
   }
 
@@ -56,11 +64,38 @@ export class CurrencyService {
 
   }
 
-  async convert(codeFrom: string, codeTo: string, amount: number) {
-    //Se ambos códigos informados
-    //Se ambos códigos existem
-    //Se quantia > 0 (400)
-    //Obter valor em relação ao real usando api (https://docs.awesomeapi.com.br/api-de-moedas)
-    //Converter (200)
+  async convert(codeFrom: string, codeTo: string, amount: number): Promise<ExchangeDto> {
+    if (!(amount > 0)) {
+      throw new BadRequestException('amount must be higher than zero');
+    }
+
+    if (!await this.findByCode(codeFrom)) {
+      throw new BadRequestException(`code ${codeFrom} does not exist`)
+    }
+
+    if (!await this.findByCode(codeTo)) {
+      throw new BadRequestException(`code ${codeTo} does not exist`)
+    }
+
+    const dto = new ExchangeDto();
+    dto.codeFrom = codeFrom;
+    dto.codeTo = codeTo;
+    dto.amountFrom = amount;
+
+    if (codeFrom === codeTo) {
+      dto.amountTo = amount;
+    } else if (codeFrom === this.exchangeApi.getBaseCurrency()) {
+      const quote = await this.exchangeApi.quote(codeTo);
+      dto.amountTo = amount / quote.amountTo;
+    } else if (codeTo === this.exchangeApi.getBaseCurrency()) {
+      const quote = await this.exchangeApi.quote(codeFrom);
+      dto.amountTo = amount * quote.amountTo;
+    } else {
+      const firstQuote = await this.exchangeApi.quote(codeFrom);
+      const secondQuote = await this.exchangeApi.quote(codeTo);
+      dto.amountTo = amount / firstQuote.amountTo * secondQuote.amountTo;
+    }
+
+    return dto;
   }
 }
