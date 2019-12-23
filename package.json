@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:create": "ts-node node_modules/.bin/typeorm migration:create -n ",
     "migration:run": "ts-node node_modules/.bin/typeorm migration:run",
-    "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert"
+    "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert",
+    "db:reload": "npm run migration:revert && npm run migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",

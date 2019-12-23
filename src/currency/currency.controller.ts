@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
 import { Currency } from './currency.entity';
-import { CurrencyDto } from './interface/currency.dto';
+import { CurrencyDto } from './dto/currency.dto';
 
 @Controller('/currency')
 export class CurrencyController {
