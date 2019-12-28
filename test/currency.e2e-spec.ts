@@ -6,6 +6,7 @@ import { Currency } from '../src/currency/currency.entity';
 import { AppModule } from '../src/app.module';
 import { CurrencyDto } from '../src/currency/dto/currency.dto';
 import { CurrencyService } from '../src/currency/currency.service';
+import { ExchangeAPI } from '../src/exchange/exchange.api';
 
 describe('CurrencyController', () => {
     let app: INestApplication;
@@ -33,7 +34,7 @@ describe('CurrencyController', () => {
                 })
                 .expect(HttpStatus.BAD_REQUEST)
                 .expect(response => {
-                    expect(response.text).toContain('code size must be 3');
+                    expect(response.body.message).toContain('code size must be 3');
                 });
         })
 
@@ -45,7 +46,7 @@ describe('CurrencyController', () => {
                     name: 'Real'
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(response => {
-                    expect(response.text).toContain('code size must be 3');
+                    expect(response.body.message).toContain('code size must be 3');
                 });
         });
 
@@ -53,7 +54,7 @@ describe('CurrencyController', () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
-            })
+            });
 
             await request(app.getHttpServer())
                 .post('/currency')
@@ -62,7 +63,7 @@ describe('CurrencyController', () => {
                     name: currencyCreated.name
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(async response => {
-                    expect(response.text).toContain('code already exists');
+                    expect(response.body.message).toContain('code already exists');
                 });
 
             await currencyService.delete(currencyCreated.id);
@@ -76,7 +77,7 @@ describe('CurrencyController', () => {
                     name: ''
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(response => {
-                    expect(response.text).toContain('name size must be between 1 and 255');
+                    expect(response.body.message).toContain('name size must be between 1 and 255');
                 });
         });
 
@@ -88,7 +89,7 @@ describe('CurrencyController', () => {
                     name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(response => {
-                    expect(response.text).toContain('name size must be between 1 and 255');
+                    expect(response.body.message).toContain('name size must be between 1 and 255');
                 });
         });
 
@@ -96,7 +97,7 @@ describe('CurrencyController', () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
-            })
+            });
 
             await request(app.getHttpServer())
                 .post('/currency')
@@ -105,7 +106,7 @@ describe('CurrencyController', () => {
                     name: currencyCreated.name
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(async response => {
-                    expect(response.text).toContain('name already exists');
+                    expect(response.body.message).toContain('name already exists');
                 });
 
             await currencyService.delete(currencyCreated.id);
@@ -119,7 +120,7 @@ describe('CurrencyController', () => {
                     name: 'Wrong Currency'
                 })
                 .expect(HttpStatus.BAD_REQUEST).expect(response => {
-                    expect(response.text).toContain('invalid code');
+                    expect(response.body.message).toContain('invalid code');
                 });
         });
 
@@ -153,7 +154,7 @@ describe('CurrencyController', () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
-            })
+            });
 
             return request(app.getHttpServer())
                 .delete(`/currency/${currencyCreated.id}`)
@@ -164,17 +165,150 @@ describe('CurrencyController', () => {
 
 
     describe('convert()', () => {
-        test.todo('should return 403 when amount is 0');
+        test('should return 403 when amount is 0', () => {
+            return request(app.getHttpServer())
+                .get('/currency/convert?codeFrom=x&codeTo=y&amount=0')
+                .expect(HttpStatus.BAD_REQUEST)
+                .expect(async response => {
+                    expect(response.body.message).toContain('amount must be higher than zero');
+                });
+        });
 
-        test.todo('should return 403 when currency code from does not exist');
+        test('should return 403 when currency code from does not exist', () => {
+            return request(app.getHttpServer())
+                .get('/currency/convert?codeFrom=x&codeTo=y&amount=100')
+                .expect(HttpStatus.BAD_REQUEST)
+                .expect(async response => {
+                    expect(response.body.message).toContain(`code x does not exist`);
+                });
+        });
 
-        test.todo('should return 403 when currency code to does not exist');
+        test('should return 403 when currency code to does not exist', async () => {
+            const currencyCreated = await currencyService.save({
+                name: 'Real',
+                code: 'BRL',
+            });
 
-        test.todo('should return 200 and convert EUR to USD');
+            await request(app.getHttpServer())
+                .get(`/currency/convert?codeFrom=${currencyCreated.code}&codeTo=y&amount=100`)
+                .expect(HttpStatus.BAD_REQUEST)
+                .expect(async response => {
+                    expect(response.body.message).toContain(`code y does not exist`);
 
-        test.todo('should return 200 and convert EUR to BRL');
+                });
 
-        test.todo('should return 200 and convert BRL to EUR');
+            await currencyService.delete(currencyCreated.id);
+        });
+
+        test('should return 200 and convert EUR to USD', async () => {
+            const amount = 100;
+
+            const currencyFrom = await currencyService.save({
+                name: 'Euro',
+                code: 'EUR',
+            });
+
+            const currencyTo = await currencyService.save({
+                name: 'Dolar',
+                code: 'USD',
+            });
+
+            await request(app.getHttpServer())
+                .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .expect(HttpStatus.OK)
+                .expect(async response => {
+                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+
+                    expect(response.body.codeFrom).toBe(currencyFrom.code);
+                    expect(response.body.codeTo).toBe(currencyTo.code);
+                    expect(Number(response.body.amountFrom)).toBe(amount);
+                    expect(response.body.amountTo).toBe(exchangeDto.amountTo);
+                });
+
+            await currencyService.delete(currencyFrom.id);
+            await currencyService.delete(currencyTo.id);
+        });
+
+        test('should return 200 and convert EUR to BRL', async () => {
+            const amount = 100;
+
+            const currencyFrom = await currencyService.save({
+                name: 'Euro',
+                code: 'EUR',
+            });
+
+            const currencyTo = await currencyService.save({
+                name: 'Real',
+                code: 'BRL',
+            });
+
+            await request(app.getHttpServer())
+                .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .expect(HttpStatus.OK)
+                .expect(async response => {
+                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+
+                    expect(response.body.codeFrom).toBe(currencyFrom.code);
+                    expect(response.body.codeTo).toBe(currencyTo.code);
+                    expect(Number(response.body.amountFrom)).toBe(amount);
+                    expect(response.body.amountTo).toBe(exchangeDto.amountTo);
+                });
+
+            await currencyService.delete(currencyFrom.id);
+            await currencyService.delete(currencyTo.id);
+        });
+
+        test('should return 200 and convert BRL to EUR', async () => {
+            const amount = 100;
+
+            const currencyFrom = await currencyService.save({
+                name: 'Real',
+                code: 'BRL',
+            });
+
+            const currencyTo = await currencyService.save({
+                name: 'Euro',
+                code: 'EUR',
+            });
+
+            await request(app.getHttpServer())
+                .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .expect(HttpStatus.OK)
+                .expect(async response => {
+                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+
+                    expect(response.body.codeFrom).toBe(currencyFrom.code);
+                    expect(response.body.codeTo).toBe(currencyTo.code);
+                    expect(Number(response.body.amountFrom)).toBe(amount);
+                    expect(response.body.amountTo).toBe(exchangeDto.amountTo);
+                });
+
+            await currencyService.delete(currencyFrom.id);
+            await currencyService.delete(currencyTo.id);
+        });
+
+        test('should return 200 and convert BRL to BRL', async () => {
+            const amount = 100;
+
+            const currency = await currencyService.save({
+                name: 'Real',
+                code: 'BRL',
+            });
+
+            await request(app.getHttpServer())
+                .get(`/currency/convert?codeFrom=${currency.code}&codeTo=${currency.code}&amount=${amount}`)
+                .expect(HttpStatus.OK)
+                .expect(async response => {
+                    const exchangeDto = await new ExchangeAPI().quote(currency.code, currency.code, amount);
+
+                    expect(response.body.codeFrom).toBe(currency.code);
+                    expect(response.body.codeTo).toBe(currency.code);
+                    expect(Number(response.body.amountFrom)).toBe(amount);
+                    expect(Number(response.body.amountTo)).toBe(exchangeDto.amountTo);
+                });
+
+            await currencyService.delete(currency.id);
+        });
     });
 
 });

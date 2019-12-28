@@ -77,25 +77,6 @@ export class CurrencyService {
       throw new BadRequestException(`code ${codeTo} does not exist`)
     }
 
-    const dto = new ExchangeDto();
-    dto.codeFrom = codeFrom;
-    dto.codeTo = codeTo;
-    dto.amountFrom = amount;
-
-    if (codeFrom === codeTo) {
-      dto.amountTo = amount;
-    } else if (codeFrom === this.exchangeApi.getBaseCurrency()) {
-      const quote = await this.exchangeApi.quote(codeTo);
-      dto.amountTo = amount / quote.amountTo;
-    } else if (codeTo === this.exchangeApi.getBaseCurrency()) {
-      const quote = await this.exchangeApi.quote(codeFrom);
-      dto.amountTo = amount * quote.amountTo;
-    } else {
-      const firstQuote = await this.exchangeApi.quote(codeFrom);
-      const secondQuote = await this.exchangeApi.quote(codeTo);
-      dto.amountTo = amount / firstQuote.amountTo * secondQuote.amountTo;
-    }
-
-    return dto;
+    return await this.exchangeApi.quote(codeFrom, codeTo, amount);
   }
 }
