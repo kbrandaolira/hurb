@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CurrencyDto } from './dto/currency.dto';
 import { Validator } from 'class-validator';
-import { ExchangeAPI } from 'src/exchange/exchange.api';
-import { ExchangeDto } from 'src/exchange/dto/exchange.dto';
+import { ExchangeAPI } from '../exchange/exchange.api';
+import { ExchangeDto } from '../exchange/dto/exchange.dto';
 
 @Injectable()
 export class CurrencyService {
