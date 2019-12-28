@@ -143,9 +143,23 @@ describe('CurrencyController', () => {
     });
 
     describe('delete()', () => {
-        test.todo('should return 404 when currency id does not exist');
+        test('should return 404 when currency id does not exist', () => {
+            return request(app.getHttpServer())
+                .delete('/currency/1')
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-        test.todo('should return 200 and currency must be deleted');
+        test('should return 200 and currency must be deleted', async () => {
+            const currencyCreated = await currencyService.save({
+                name: 'Real',
+                code: 'BRL',
+            })
+
+            return request(app.getHttpServer())
+                .delete(`/currency/${currencyCreated.id}`)
+                .expect(HttpStatus.OK);
+
+        });
     });
 
 
