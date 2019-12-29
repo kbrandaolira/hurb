@@ -1,18 +1,40 @@
-{
-  "type": "mysql",
-  "host": "localhost",
-  "port": 3306,
-  "username": "root",
-  "password": "mint240191",
-  "database": "hurb",
-  "entities": [
-    "dist/**/*.entity{.ts,.js}"
-  ],
-  "synchronize": false,
-  "migrations": [
-    "dist/migration/*.js"
-  ],
-  "cli": {
-    "migrationsDir": "migration"
+[
+  {
+    "name": "default",
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "mint240191",
+    "database": "hurb",
+    "entities": [
+      "dist/**/*.entity{.ts,.js}"
+    ],
+    "synchronize": false,
+    "migrations": [
+      "dist/migration/*.js"
+    ],
+    "cli": {
+      "migrationsDir": "migration"
+    }
+  },
+  {
+    "name": "test",
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "mint240191",
+    "database": "hurbtest",
+    "entities": [
+      "dist/**/*.entity{.ts,.js}"
+    ],
+    "synchronize": false,
+    "migrations": [
+      "dist/migration/*.js"
+    ],
+    "cli": {
+      "migrationsDir": "migration"
+    }
   }
-}
+]

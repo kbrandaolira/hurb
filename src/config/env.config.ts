@@ -1,11 +1,5 @@
 export class EnvConfig {
     API_KEY: string;
-    DB_HOST: string;
-    DB_NAME: string;
-    DB_PASSWORD: string;
-    DB_PORT: number;
-    DB_SYNC: boolean;
-    DB_TYPE: string;
-    DB_USERNAME: string;
+    DB_CONNECTION_NAME: string;
     NODE_ENV: string;
 }

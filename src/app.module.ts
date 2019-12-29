@@ -13,15 +13,7 @@ import { Currency } from './currency/currency.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
-          type: configService.getEnvConfig().DB_TYPE,
-          host: configService.getEnvConfig().DB_HOST,
-          port: configService.getEnvConfig().DB_PORT,
-          username: configService.getEnvConfig().DB_USERNAME,
-          password: configService.getEnvConfig().DB_PASSWORD,
-          database: configService.getEnvConfig().DB_NAME,
-          synchronize: configService.getEnvConfig().DB_SYNC,
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          migrations: [__dirname + '/migration/*.{.ts,.js}'],
+          name: configService.getEnvConfig().DB_CONNECTION_NAME
         } as TypeOrmModuleOptions;
       },
     }),
