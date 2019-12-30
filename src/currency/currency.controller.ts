@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Delete, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, Query, UseGuards } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
 import { Currency } from './currency.entity';
 import { CurrencyDto } from './dto/currency.dto';
 import { ExchangeDto } from '../exchange/dto/exchange.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('/currency')
+@UseGuards(AuthGuard)
 export class CurrencyController {
   constructor(private readonly currencyService: CurrencyService) { }
 
