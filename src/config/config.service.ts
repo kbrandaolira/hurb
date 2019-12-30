@@ -11,9 +11,15 @@ export class ConfigService {
     constructor() {
         const output = dotenv.parse(fs.readFileSync(`.env.${process.env.NODE_ENV}`));
         this.envConfig = {
-            NODE_ENV: output.NODE_ENV,
-            DB_CONNECTION_NAME: output.DB_CONNECTION_NAME,
             API_KEY: output.API_KEY,
+            NODE_ENV: output.NODE_ENV,
+            DB_NAME: output.DB_NAME,
+            DB: output.DB,
+            DB_TYPE: output.DB_TYPE,
+            DB_HOST: output.DB_HOST,
+            DB_PORT: Number(output.DB_PORT),
+            DB_USERNAME: output.DB_USERNAME,
+            DB_PASSWORD: output.DB_PASSWORD,
         }
     }
 

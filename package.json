@@ -11,7 +11,7 @@
     "start": "NODE_ENV=dev nest start --watch",
     "test": "ts-node node_modules/.bin/typeorm migration:revert --connection test && ts-node node_modules/.bin/typeorm migration:run --connection test && NODE_ENV=test jest --config ./test/jest-e2e.json --detectOpenHandles",
     "migration:create": "ts-node node_modules/.bin/typeorm migration:create -n ",
-    "migration:run": "ts-node node_modules/.bin/typeorm migration:run",
+    "migration:run": "ts-node node_modules/.bin/typeorm migration:run && ts-node node_modules/.bin/fixtures fixture --config ormconfig.json",
     "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert",
     "db:reload": "npm run migration:revert && npm run migration:run"
   },
@@ -28,7 +28,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
-    "typeorm": "^0.2.21"
+    "typeorm": "^0.2.21",
+    "typeorm-fixtures-cli": "^1.4.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",

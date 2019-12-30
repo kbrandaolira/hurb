@@ -310,5 +310,4 @@ describe('CurrencyController', () => {
             await currencyService.delete(currency.id);
         });
     });
-
 });

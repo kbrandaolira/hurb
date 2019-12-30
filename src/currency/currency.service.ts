@@ -29,6 +29,10 @@ export class CurrencyService {
     return await this.currencyRepository.findOne({ id })
   }
 
+  async find(): Promise<Currency[]> {
+    return await this.currencyRepository.find();
+  }
+
   async save(dto: CurrencyDto): Promise<Currency> {
     const validator = new Validator();
 

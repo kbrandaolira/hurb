@@ -9,4 +9,4 @@ import { CurrencyController } from './currency.controller';
   providers: [CurrencyService],
   controllers: [CurrencyController],
 })
-export class CurrencyModule {}
+export class CurrencyModule { }
