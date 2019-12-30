@@ -7,10 +7,12 @@ import { AppModule } from '../src/app.module';
 import { CurrencyDto } from '../src/currency/dto/currency.dto';
 import { CurrencyService } from '../src/currency/currency.service';
 import { ExchangeAPI } from '../src/exchange/exchange.api';
+import { ConfigService } from '../src/config/config.service';
 
 describe('CurrencyController', () => {
     let app: INestApplication;
     let currencyService: CurrencyService;
+    let configService: ConfigService;
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
@@ -21,13 +23,22 @@ describe('CurrencyController', () => {
 
         app = module.createNestApplication();
         currencyService = app.get(CurrencyService);
+        configService = app.get(ConfigService);
         await app.init();
     });
 
     describe('save()', () => {
-        test('should return 403 when currency code is less than 3 characters', () => {
+        test('should return 403 when API_KEY is wrong', () => {
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', '')
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
+        test('should return 400 when currency code is less than 3 characters', () => {
+            return request(app.getHttpServer())
+                .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'BR',
                     name: 'Real'
@@ -38,9 +49,10 @@ describe('CurrencyController', () => {
                 });
         })
 
-        test('should return 403 when currency code is higher than 3 characters', () => {
+        test('should return 400 when currency code is higher than 3 characters', () => {
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'BRSL',
                     name: 'Real'
@@ -50,7 +62,7 @@ describe('CurrencyController', () => {
                 });
         });
 
-        test('should return 403 when currency code is already registered', async () => {
+        test('should return 400 when currency code is already registered', async () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
@@ -58,6 +70,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: currencyCreated.code,
                     name: currencyCreated.name
@@ -69,9 +82,10 @@ describe('CurrencyController', () => {
             await currencyService.delete(currencyCreated.id);
         });
 
-        test('should return 403 when currency name is empty', () => {
+        test('should return 400 when currency name is empty', () => {
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'BRL',
                     name: ''
@@ -81,9 +95,10 @@ describe('CurrencyController', () => {
                 });
         });
 
-        test('should return 403 when currency name is higher than 255', () => {
+        test('should return 400 when currency name is higher than 255', () => {
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'BRL',
                     name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -93,7 +108,7 @@ describe('CurrencyController', () => {
                 });
         });
 
-        test('should return 403 when currency name is already registered', async () => {
+        test('should return 400 when currency name is already registered', async () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
@@ -101,6 +116,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'BR2',
                     name: currencyCreated.name
@@ -112,9 +128,10 @@ describe('CurrencyController', () => {
             await currencyService.delete(currencyCreated.id);
         });
 
-        test('should return 403 when currency code is not registered in external exchange api', () => {
+        test('should return 400 when currency code is not registered in external exchange api', () => {
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send({
                     code: 'WCR',
                     name: 'Wrong Currency'
@@ -132,6 +149,7 @@ describe('CurrencyController', () => {
 
             return request(app.getHttpServer())
                 .post('/currency')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .send(currencyDto)
                 .expect(HttpStatus.CREATED)
                 .expect(async response => {
@@ -144,9 +162,17 @@ describe('CurrencyController', () => {
     });
 
     describe('delete()', () => {
+        test('should return 403 when API_KEY is wrong', () => {
+            return request(app.getHttpServer())
+                .delete('/currency/1')
+                .set('API_KEY', '')
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
         test('should return 404 when currency id does not exist', () => {
             return request(app.getHttpServer())
                 .delete('/currency/1')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.NOT_FOUND);
         });
 
@@ -158,6 +184,7 @@ describe('CurrencyController', () => {
 
             return request(app.getHttpServer())
                 .delete(`/currency/${currencyCreated.id}`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK);
 
         });
@@ -165,25 +192,34 @@ describe('CurrencyController', () => {
 
 
     describe('convert()', () => {
-        test('should return 403 when amount is 0', () => {
+        test('should return 403 when API_KEY is wrong', () => {
             return request(app.getHttpServer())
                 .get('/currency/convert?codeFrom=x&codeTo=y&amount=0')
+                .set('API_KEY', '')
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
+        test('should return 400 when amount is 0', () => {
+            return request(app.getHttpServer())
+                .get('/currency/convert?codeFrom=x&codeTo=y&amount=0')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.BAD_REQUEST)
                 .expect(async response => {
                     expect(response.body.message).toContain('amount must be higher than zero');
                 });
         });
 
-        test('should return 403 when currency code from does not exist', () => {
+        test('should return 400 when currency code from does not exist', () => {
             return request(app.getHttpServer())
                 .get('/currency/convert?codeFrom=x&codeTo=y&amount=100')
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.BAD_REQUEST)
                 .expect(async response => {
                     expect(response.body.message).toContain(`code x does not exist`);
                 });
         });
 
-        test('should return 403 when currency code to does not exist', async () => {
+        test('should return 400 when currency code to does not exist', async () => {
             const currencyCreated = await currencyService.save({
                 name: 'Real',
                 code: 'BRL',
@@ -191,6 +227,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .get(`/currency/convert?codeFrom=${currencyCreated.code}&codeTo=y&amount=100`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.BAD_REQUEST)
                 .expect(async response => {
                     expect(response.body.message).toContain(`code y does not exist`);
@@ -215,6 +252,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
                     const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
@@ -244,6 +282,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
                     const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
@@ -273,6 +312,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .get(`/currency/convert?codeFrom=${currencyFrom.code}&codeTo=${currencyTo.code}&amount=${amount}`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
                     const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
@@ -297,6 +337,7 @@ describe('CurrencyController', () => {
 
             await request(app.getHttpServer())
                 .get(`/currency/convert?codeFrom=${currency.code}&codeTo=${currency.code}&amount=${amount}`)
+                .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
                     const exchangeDto = await new ExchangeAPI().quote(currency.code, currency.code, amount);

@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_ENV=dev nest start --watch",
-    "test": "ts-node node_modules/.bin/typeorm migration:revert --connection test && ts-node node_modules/.bin/typeorm migration:run --connection test && NODE_ENV=test jest --config ./test/jest-e2e.json --detectOpenHandles",
+    "test": "ts-node node_modules/.bin/typeorm migration:revert --connection test && ts-node node_modules/.bin/typeorm migration:run --connection test && NODE_ENV=test jest --config ./test/jest-e2e.json",
     "migration:create": "ts-node node_modules/.bin/typeorm migration:create -n ",
     "migration:run": "ts-node node_modules/.bin/typeorm migration:run && ts-node node_modules/.bin/fixtures fixture --config ormconfig.json",
     "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert",
