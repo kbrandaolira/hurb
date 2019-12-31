@@ -30,6 +30,7 @@ export class CreateCurrency1576897274851 implements MigrationInterface {
             name: 'created_at',
             type: 'timestamp',
             isNullable: false,
+            default: 'CURRENT_TIMESTAMP'
           },
         ],
       }),
