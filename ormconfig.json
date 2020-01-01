@@ -12,10 +12,10 @@
     ],
     "synchronize": false,
     "migrations": [
-      "dist/migration/*.js"
+      "dist/db/migration/*.js"
     ],
     "cli": {
-      "migrationsDir": "migration"
+      "migrationsDir": "db/migration"
     }
   },
   {
@@ -31,10 +31,10 @@
     ],
     "synchronize": false,
     "migrations": [
-      "dist/migration/*.js"
+      "dist/db/migration/*.js"
     ],
     "cli": {
-      "migrationsDir": "migration"
+      "migrationsDir": "db/migration"
     }
   }
 ]
