@@ -4,13 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CurrencyDto } from './dto/currency.dto';
 import { Validator } from 'class-validator';
-import { ExchangeAPI } from '../exchange/exchange.api';
-import { ExchangeDto } from '../exchange/dto/exchange.dto';
+import { CurrencyConversionService } from '../currency-conversion/currency.conversion.service';
+import { CurrencyConversionDto } from '../currency-conversion/dto/currency.conversion.dto';
 
 @Injectable()
 export class CurrencyService {
 
-  private readonly exchangeApi: ExchangeAPI = new ExchangeAPI();
+  private readonly currencyConversionService: CurrencyConversionService = new CurrencyConversionService();
 
   constructor(
     @InjectRepository(Currency)
@@ -52,7 +52,7 @@ export class CurrencyService {
       throw new BadRequestException('name already exists')
     }
 
-    if (!await this.exchangeApi.isValidCode(dto.code) && dto.code !== this.exchangeApi.getBaseCurrency()) {
+    if (!await this.currencyConversionService.isValidCode(dto.code) && dto.code !== this.currencyConversionService.getBaseCurrency()) {
       throw new BadRequestException('invalid code')
     }
 
@@ -68,7 +68,7 @@ export class CurrencyService {
 
   }
 
-  async convert(codeFrom: string, codeTo: string, amount: number): Promise<ExchangeDto> {
+  async convert(codeFrom: string, codeTo: string, amount: number): Promise<CurrencyConversionDto> {
     if (!(amount > 0)) {
       throw new BadRequestException('amount must be higher than zero');
     }
@@ -81,6 +81,6 @@ export class CurrencyService {
       throw new BadRequestException(`code ${codeTo} does not exist`)
     }
 
-    return await this.exchangeApi.quote(codeFrom, codeTo, amount);
+    return await this.currencyConversionService.quote(codeFrom, codeTo, amount);
   }
 }

@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Delete, Param, Query, UseGuards } from '@n
 import { CurrencyService } from './currency.service';
 import { Currency } from './currency.entity';
 import { CurrencyDto } from './dto/currency.dto';
-import { ExchangeDto } from '../exchange/dto/exchange.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { CurrencyConversionDto } from '../currency-conversion/dto/currency.conversion.dto';
 
 @Controller('/currency')
 @UseGuards(AuthGuard)
@@ -21,7 +21,7 @@ export class CurrencyController {
   }
 
   @Get('/convert')
-  async convert(@Query() query): Promise<ExchangeDto> {
+  async convert(@Query() query): Promise<CurrencyConversionDto> {
     return await this.currencyService.convert(query.codeFrom, query.codeTo, query.amount);
   }
 

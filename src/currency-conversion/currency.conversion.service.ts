@@ -1,24 +1,26 @@
 import axios from 'axios';
-import { ExchangeDto } from './dto/exchange.dto';
+import { CurrencyConversionDto } from './dto/currency.conversion.dto';
 
-// we consume from https://economia.awesomeapi.com.br 
+// we consume from https://economia.awesomeapi.com.br to convert currencies
 
-export class ExchangeAPI {
+export class CurrencyConversionService {
 
-    private readonly baseCurency: string = 'BRL';
+    private readonly baseCurrency: string = 'BRL';
     private readonly url: string = 'https://economia.awesomeapi.com.br';
 
     // our base currency is BRL
 
     getBaseCurrency(): string {
-        return this.baseCurency;
+        return this.baseCurrency;
     }
 
-    /* we quote 1 real (BRL), our base currency, to another currency 
-    example: 1 real equal 4 dollars */
+    /* we integrate with the external api to find out how much 1 real 
+    is worth against the currency as a parameter 
+    example: 1 BRL is 0.25 USD (if 1 BRL were 4 USD)
+    response: fromCode BRL fromAmount 1.00 toCode USD toAmount 0.25  */
 
-    private async baseQuote(code: string): Promise<ExchangeDto> {
-        const data = await axios.get(`${this.url}/${code}-${this.baseCurency}/1`).then(response => {
+    private async baseQuote(code: string): Promise<CurrencyConversionDto> {
+        const data = await axios.get(`${this.url}/${code}-${this.baseCurrency}/1`).then(response => {
             return response.data;
         });
 
@@ -40,10 +42,10 @@ export class ExchangeAPI {
         return await this.baseQuote(code) !== null;
     }
 
-    // we do the logic to quote between two currencies
+    // logic to quote between two currencies
 
-    async quote(codeFrom: string, codeTo: string, amount: number): Promise<ExchangeDto> {
-        const dto = new ExchangeDto();
+    async quote(codeFrom: string, codeTo: string, amount: number): Promise<CurrencyConversionDto> {
+        const dto = new CurrencyConversionDto();
         dto.codeFrom = codeFrom;
         dto.codeTo = codeTo;
         dto.amountFrom = amount;

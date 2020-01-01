@@ -6,8 +6,8 @@ import { Currency } from '../src/currency/currency.entity';
 import { AppModule } from '../src/app.module';
 import { CurrencyDto } from '../src/currency/dto/currency.dto';
 import { CurrencyService } from '../src/currency/currency.service';
-import { ExchangeAPI } from '../src/exchange/exchange.api';
 import { ConfigService } from '../src/config/config.service';
+import { CurrencyConversionService } from 'src/currency-conversion/currency.conversion.service';
 
 describe('CurrencyController', () => {
     let app: INestApplication;
@@ -255,7 +255,7 @@ describe('CurrencyController', () => {
                 .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
-                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+                    const exchangeDto = await new CurrencyConversionService().quote(currencyFrom.code, currencyTo.code, amount);
 
                     expect(response.body.codeFrom).toBe(currencyFrom.code);
                     expect(response.body.codeTo).toBe(currencyTo.code);
@@ -285,7 +285,7 @@ describe('CurrencyController', () => {
                 .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
-                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+                    const exchangeDto = await new CurrencyConversionService().quote(currencyFrom.code, currencyTo.code, amount);
 
                     expect(response.body.codeFrom).toBe(currencyFrom.code);
                     expect(response.body.codeTo).toBe(currencyTo.code);
@@ -315,7 +315,7 @@ describe('CurrencyController', () => {
                 .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
-                    const exchangeDto = await new ExchangeAPI().quote(currencyFrom.code, currencyTo.code, amount);
+                    const exchangeDto = await new CurrencyConversionService().quote(currencyFrom.code, currencyTo.code, amount);
 
                     expect(response.body.codeFrom).toBe(currencyFrom.code);
                     expect(response.body.codeTo).toBe(currencyTo.code);
@@ -340,7 +340,7 @@ describe('CurrencyController', () => {
                 .set('API_KEY', configService.getEnvConfig().API_KEY)
                 .expect(HttpStatus.OK)
                 .expect(async response => {
-                    const exchangeDto = await new ExchangeAPI().quote(currency.code, currency.code, amount);
+                    const exchangeDto = await new CurrencyConversionService().quote(currency.code, currency.code, amount);
 
                     expect(response.body.codeFrom).toBe(currency.code);
                     expect(response.body.codeTo).toBe(currency.code);
