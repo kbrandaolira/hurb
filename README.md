@@ -14,15 +14,16 @@ Construção de uma API, que responde JSON, para realizar conversões entre dife
 4. Awesome API (https://economia.awesomeapi.com.br) para cotação das moedas
 
 ## Como rodar o projeto?
-1. Instale o Docker (sudo apt install docker.io)
+1. Instale o Docker `sudo apt install docker.io`
 2. Rode o comando `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up` (ambiente de desenvolvimento) ou `docker-compose -f docker-compose.yml -f docker-compose.test.yml up` (ambiente de teste)
-- Pronto, a aplicação estará no ar na porta 3000 e o banco na 3306
+3. Pronto, a aplicação estará no ar na porta 3000
 
 ## Rotas
-Para acessar as rotas é necessário informar no header a `API_KEY` que está configurada nos arquivos `.env`.
+Para acessar as rotas é necessário informar no header a `API_KEY` que está configurada no arquivo `.env.dev` ou `.env.test`.
 
 1. POST /currency
-Exemplo da Requisição:
+
+Requisição:
 ```json
 {
 	"name": "Real",
@@ -30,8 +31,7 @@ Exemplo da Requisição:
 }
 ```
 
-Exemplo da Resposta:
-Status 201
+Resposta: Status 201
 ```json
 {
 	"name": "Real",
@@ -42,20 +42,18 @@ Status 201
 
 2. DELETE /currency/{id}
 
-Exemplo passando parâmetro id = 1
+Parâmetro: id = 1
 
-Exemplo da Resposta:
-Status 200 
+Resposta: Status 200 
 ```json
 {}
 ```
 
 3. GET /currency/convert?codeFrom={codeFrom}&codeTo={codeTo}&amount={amount}
 
-Exemplo passando parâmetro codeFrom = USD, codeTo = BRL e amount = 100 
+Parâmetros: codeFrom = USD, codeTo = BRL e amount = 100 
 
-Exemplo da Resposta:
-Status 200 
+Resposta: Status 200 
 ```json
 {
     "codeFrom": "USD",
@@ -76,4 +74,13 @@ Status 200
     - `migration:create`: Gera uma migration, basta definir o nome dela após o comando.
     - `migration:run`: Roda todas as migrations.
     - `migration:revert`: Reverte todas as migrations.
-    - `fixture:run`: Roda os arquivos que geram dados iniciais para aplicação (./db/fixture)
+    - `fixture:run`: Roda os arquivos que geram dados iniciais para aplicação (db/fixture)
+
+    ## Dúvidas?
+    Email: kbrandaolira@gmail.com ou 
+    
+    Celular: (21) 98332-6783
+
+    Github: https://github.com/kbrandaolira/
+
+    LinkedIn: https://br.linkedin.com/in/kbrandaolira
