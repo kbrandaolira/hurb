@@ -1,7 +1,7 @@
 # <img src="https://avatars1.githubusercontent.com/u/7063040?v=4&s=200.jpg" alt="HU" width="24" /> API de Conversão de Moedas
 
 ## Solução
-Construção de uma API, que responda JSON, para realizar conversões entre diferentes moedas com cotações de verdade e atuais.
+Construção de uma API, que responde JSON, para realizar conversões entre diferentes moedas com cotações de verdade e atuais.
 
 ## Tecnologias utilizadas:
 1. Node JS
