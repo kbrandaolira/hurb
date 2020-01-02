@@ -74,13 +74,13 @@ Resposta: Status 200
     - `migration:create`: Gera uma migration, basta definir o nome dela após o comando.
     - `migration:run`: Roda todas as migrations.
     - `migration:revert`: Reverte todas as migrations.
-    - `fixture:run`: Roda os arquivos que geram dados iniciais para aplicação (db/fixture)
+    - `fixture:run`: Roda os arquivos que geram dados iniciais para aplicação (db/fixture) 
 
-    ## Dúvidas?
-    Email: kbrandaolira@gmail.com ou 
-    
-    Celular: (21) 98332-6783
+## Dúvidas?
+Email: kbrandaolira@gmail.com
 
-    Github: https://github.com/kbrandaolira/
+Celular: (21) 98332-6783
 
-    LinkedIn: https://br.linkedin.com/in/kbrandaolira
+Github: https://github.com/kbrandaolira/
+
+LinkedIn: https://br.linkedin.com/in/kbrandaolira
