@@ -2,7 +2,7 @@
   {
     "name": "default",
     "type": "mysql",
-    "host": "mysql",
+    "host": "172.17.0.1",
     "port": 3306,
     "username": "root",
     "password": "240191",
@@ -21,7 +21,7 @@
   {
     "name": "test",
     "type": "mysql",
-    "host": "mysql",
+    "host": "172.17.0.1",
     "port": 3306,
     "username": "root",
     "password": "240191",

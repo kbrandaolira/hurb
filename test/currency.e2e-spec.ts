@@ -7,7 +7,7 @@ import { AppModule } from '../src/app.module';
 import { CurrencyDto } from '../src/currency/dto/currency.dto';
 import { CurrencyService } from '../src/currency/currency.service';
 import { ConfigService } from '../src/config/config.service';
-import { CurrencyConversionService } from 'src/currency-conversion/currency.conversion.service';
+import { CurrencyConversionService } from '../src/currency-conversion/currency.conversion.service';
 
 describe('CurrencyController', () => {
     let app: INestApplication;

@@ -7,13 +7,12 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_ENV=dev nest start --watch",
-    "test": "ts-node node_modules/.bin/typeorm migration:revert --connection test && ts-node node_modules/.bin/typeorm migration:run --connection test && NODE_ENV=test jest --config ./test/jest-e2e.json",
+    "test": "NODE_ENV=test jest --config ./test/jest-e2e.json --watchAll",
     "migration:create": "ts-node node_modules/.bin/typeorm migration:create -n ",
-    "migration:run": "ts-node node_modules/.bin/typeorm migration:run && ts-node node_modules/.bin/fixtures db/fixture --config ormconfig.json",
-    "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert",
-    "db:reload": "npm run migration:revert && npm run migration:run"
+    "migration:run": "ts-node node_modules/.bin/typeorm migration:run --connection ",
+    "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert --connection ",
+    "fixture:run": "ts-node node_modules/.bin/fixtures db/fixture --config ormconfig.json"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",
