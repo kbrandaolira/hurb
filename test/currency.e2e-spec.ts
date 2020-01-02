@@ -27,6 +27,10 @@ describe('CurrencyController', () => {
         await app.init();
     });
 
+    afterEach(async () => {
+        await currencyService.deleteAll();
+    })
+
     describe('save()', () => {
         test('should return 403 when API_KEY is wrong', () => {
             return request(app.getHttpServer())
@@ -78,8 +82,6 @@ describe('CurrencyController', () => {
                 .expect(HttpStatus.BAD_REQUEST).expect(async response => {
                     expect(response.body.message).toContain('code already exists');
                 });
-
-            await currencyService.delete(currencyCreated.id);
         });
 
         test('should return 400 when currency name is empty', () => {
@@ -124,8 +126,6 @@ describe('CurrencyController', () => {
                 .expect(HttpStatus.BAD_REQUEST).expect(async response => {
                     expect(response.body.message).toContain('name already exists');
                 });
-
-            await currencyService.delete(currencyCreated.id);
         });
 
         test('should return 400 when currency code is not registered in external exchange api', () => {
@@ -156,7 +156,6 @@ describe('CurrencyController', () => {
                     const currencyCreated = await currencyService.findByCode(currencyDto.code);
                     expect(currencyCreated.code).toEqual(currencyDto.code);
                     expect(currencyCreated.name).toEqual(currencyDto.name);
-                    await currencyService.delete(currencyCreated.id);
                 });
         });
     });
@@ -233,8 +232,6 @@ describe('CurrencyController', () => {
                     expect(response.body.message).toContain(`code y does not exist`);
 
                 });
-
-            await currencyService.delete(currencyCreated.id);
         });
 
         test('should return 200 and convert EUR to USD', async () => {
@@ -262,9 +259,6 @@ describe('CurrencyController', () => {
                     expect(Number(response.body.amountFrom)).toBe(amount);
                     expect(response.body.amountTo).toBe(exchangeDto.amountTo);
                 });
-
-            await currencyService.delete(currencyFrom.id);
-            await currencyService.delete(currencyTo.id);
         });
 
         test('should return 200 and convert EUR to BRL', async () => {
@@ -292,9 +286,6 @@ describe('CurrencyController', () => {
                     expect(Number(response.body.amountFrom)).toBe(amount);
                     expect(response.body.amountTo).toBe(exchangeDto.amountTo);
                 });
-
-            await currencyService.delete(currencyFrom.id);
-            await currencyService.delete(currencyTo.id);
         });
 
         test('should return 200 and convert BRL to EUR', async () => {
@@ -322,9 +313,6 @@ describe('CurrencyController', () => {
                     expect(Number(response.body.amountFrom)).toBe(amount);
                     expect(response.body.amountTo).toBe(exchangeDto.amountTo);
                 });
-
-            await currencyService.delete(currencyFrom.id);
-            await currencyService.delete(currencyTo.id);
         });
 
         test('should return 200 and convert BRL to BRL', async () => {
@@ -347,8 +335,6 @@ describe('CurrencyController', () => {
                     expect(Number(response.body.amountFrom)).toBe(amount);
                     expect(Number(response.body.amountTo)).toBe(exchangeDto.amountTo);
                 });
-
-            await currencyService.delete(currency.id);
         });
     });
 });

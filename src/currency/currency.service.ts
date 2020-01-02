@@ -68,6 +68,13 @@ export class CurrencyService {
 
   }
 
+  async deleteAll(): Promise<void> {
+    await this.currencyRepository
+      .createQueryBuilder()
+      .delete()
+      .execute();
+  }
+
   async convert(codeFrom: string, codeTo: string, amount: number): Promise<CurrencyConversionDto> {
     if (!(amount > 0)) {
       throw new BadRequestException('amount must be higher than zero');
